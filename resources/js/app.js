@@ -29,6 +29,8 @@ var put = (player, id) => {
         for (var j = 0; j < gameBoard[i].length; j++) {
             if (j == _id[0] && i == _id[1]) {
                 gameBoard[_id[0]][_id[1]] = player;
+                var _element = document.getElementById(indexToId(_id));
+                _element.classList.add(`${player.toLowerCase()}-filled`);
                 if (debug)
                     console.log(`${player} placed at ${_id}`);
             }
@@ -107,6 +109,21 @@ var initializeGame = () => {
     });
 }
 
+var indexToId = (index) => {
+    var indexTable = {
+        '0,0': '1',
+        '0,1': '2',
+        '0,2': '3',
+        '1,0': '4',
+        '1,1': '5',
+        '1,2': '6',
+        '2,0': '7',
+        '2,1': '8',
+        '2,2': '9'
+    };
+    return `cell-${indexTable[index.toString()]}`;
+}
+
 var idToIndex = (cell) => {
     var id = cell.id.replace('cell-', '');
     var idTable = {
@@ -128,29 +145,55 @@ var oAction = () => {
     if (canPlay)
         setTimeout(() => {
             if (debug)
-                _AI.action(gameBoard);
-            currentTurn--;
+                put('O', _AI.action(gameBoard));
+            currentTurn = 0;
             statusReview();
         }, 2000);
 }
 
+var allCellsFilled = () => {
+    for (var i = 0; i < gameBoard.length; i++) {
+        for (var j = 0; j < gameBoard[i].length; j++) {
+            if (gameBoard[i][j] == '')
+                return false;
+        }
+    }
+    return true;
+}
+
+var highlightCell = (cells) => {
+    cells.forEach(element => {
+        element.classList.add('highlighted-cell');
+    });
+}
+
 var winCheck = () => {
     if (gameBoard[0][0] !== "" && gameBoard[0][0] === gameBoard[0][1] && gameBoard[0][0] === gameBoard[0][2]) {
+        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([0, 1])), document.getElementById(indexToId([0, 2]))]);
         return gameBoard[0][0];
     } else if (gameBoard[1][0] !== "" && gameBoard[1][0] === gameBoard[1][1] && gameBoard[1][0] === gameBoard[1][2]) {
+        highlightCell([document.getElementById(indexToId([1, 0])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([1, 2]))]);
         return gameBoard[1][0];
     } else if (gameBoard[2][0] !== "" && gameBoard[2][0] === gameBoard[2][1] && gameBoard[2][0] === gameBoard[2][2]) {
+        highlightCell([document.getElementById(indexToId([2, 0])), document.getElementById(indexToId([2, 1])), document.getElementById(indexToId([2, 2]))]);
         return gameBoard[2][0];
     } else if (gameBoard[0][0] !== "" && gameBoard[0][0] === gameBoard[1][0] && gameBoard[0][0] === gameBoard[2][0]) {
+        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([1, 0])), document.getElementById(indexToId([2, 0]))]);
         return gameBoard[0][0];
     } else if (gameBoard[0][1] !== "" && gameBoard[0][1] === gameBoard[1][1] && gameBoard[0][1] === gameBoard[2][1]) {
+        highlightCell([document.getElementById(indexToId([0, 1])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 1]))]);
         return gameBoard[0][1];
     } else if (gameBoard[0][2] !== "" && gameBoard[0][2] === gameBoard[1][2] && gameBoard[0][2] === gameBoard[2][2]) {
+        highlightCell([document.getElementById(indexToId([0, 2])), document.getElementById(indexToId([1, 2])), document.getElementById(indexToId([2, 2]))]);
         return gameBoard[0][2];
     } else if (gameBoard[0][0] !== "" && gameBoard[0][0] === gameBoard[1][1] && gameBoard[0][0] === gameBoard[2][2]) {
+        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 2]))]);
         return gameBoard[0][0];
     } else if (gameBoard[0][2] !== "" && gameBoard[0][2] === gameBoard[1][1] && gameBoard[0][2] === gameBoard[2][0]) {
+        highlightCell([document.getElementById(indexToId([0, 2])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 0]))]);
         return gameBoard[0][2];
+    } else if (allCellsFilled()) {
+        return 'draw';
     } else {
         return false;
     }
@@ -164,12 +207,15 @@ var disableGame = () => {
 var enableGame = () => {
     gameBoardElement.disabled = false;
     canPlay = true;
+    if (playAI)
+        oAction();
 }
 
 var clearBoard = () => {
     cells.forEach(element => {
         element.classList.remove("x-filled");
         element.classList.remove("o-filled");
+        element.classList.remove("highlighted-cell");
     });
     gameBoard = _gameBoard;
     _gameBoard = [
@@ -177,7 +223,8 @@ var clearBoard = () => {
         ['', '', ''],
         ['', '', '']
     ];
-    currentTurn = 0; // review needed
+    // randomly select who goes first
+    currentTurn = Math.floor(Math.random() * 2) + 1;
 }
 
 var restartGame = () => {
@@ -195,14 +242,18 @@ var boardStatusCheck = () => {
 var statusReview = () => {
     var winner = winCheck();
     if (winner !== false) {
-        if (winner === 'X') {
-            x.winner();
-            o.loser();
-            headerStatus.innerHTML = `X wins!`;
+        if (winner === 'draw') {
+            headerStatus.innerHTML = `It's a draw!`;
         } else {
-            o.winner();
-            x.loser();
-            headerStatus.innerHTML = `O wins!`;
+            if (winner === 'X') {
+                x.winner();
+                o.loser();
+                headerStatus.innerHTML = `X wins!`;
+            } else {
+                o.winner();
+                x.loser();
+                headerStatus.innerHTML = `O wins!`;
+            }
         }
         disableGame();
         restartGame();
@@ -220,7 +271,7 @@ cells.forEach(element => {
                     if (getCurrentTurn() == 'X') {
                         element.classList.add("x-filled");
                         put('X', idToIndex(element));
-                        currentTurn++;
+                        currentTurn = 1;
                         statusReview();
                         oAction();
                     } else {
@@ -230,12 +281,12 @@ cells.forEach(element => {
                     if (getCurrentTurn() == 'X') {
                         element.classList.add("x-filled");
                         put('X', idToIndex(element));
-                        currentTurn++;
+                        currentTurn = 1;
                         statusReview();
                     } else if (getCurrentTurn() == 'O') {
                         element.classList.add("o-filled");
                         put('O', idToIndex(element));
-                        currentTurn--;
+                        currentTurn = 0;
                         statusReview();
                     }
                 }
