@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI based Tic-Tac-Toe JS</title>
+    <link rel="stylesheet" href="resources/css/style.css">
+    <link rel="shortcut icon" href="resources/images/favicon.png" type="image/png">
+</head>
+
+<body>
+    <div id="main-container" class="main-container">
+        <div class="game-header">
+            <h1>Tic-Tac-Toe</h1>
+            <p id="game-status" class="header-description">Place your X in a cell.</p>
+        </div>
+        <div id="game-board" class="game-board">
+            <div class="board-row">
+                <div class="board-cell" id="cell-1"></div>
+                <div class="board-cell" id="cell-2"></div>
+                <div class="board-cell" id="cell-3"></div>
+            </div>
+            <div class="board-row">
+                <div class="board-cell" id="cell-4"></div>
+                <div class="board-cell" id="cell-5"></div>
+                <div class="board-cell" id="cell-6"></div>
+            </div>
+            <div class="board-row">
+                <div class="board-cell" id="cell-7"></div>
+                <div class="board-cell" id="cell-8"></div>
+                <div class="board-cell" id="cell-9"></div>
+            </div>
+        </div>
+        <div class="board-result">
+            <div class="result-box">
+                <div class="x-filled mini-content mr10"></div>
+                <div class="result-properties">
+                    <p id="x-win" class="result-property">Win: 0</p>
+                    <p id="x-lose" class="result-property">Lose: 0</p>
+                </div>
+            </div>
+            <div class="separator-line"></div>
+            <div class="result-box">
+                <div class="o-filled mini-content mr10"></div>
+                <div class="result-properties">
+                    <p id="o-win" class="result-property">Win: 0</p>
+                    <p id="o-lose" class="result-property">Lose: 0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="startup-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header center-modal-header">
+                <h2>Tic-Tac-Toe</h2>
+            </div>
+            <div class="modal-body">
+                <p>Welcome to Tic-Tac-Toe 😉. To start game, press below button.</p>
+            </div>
+            <div class="modal-footer center-modal-footer">
+                <button id="start-ai-game-btn" class="btn normal-btn">Play with AI</button>
+                <button id="start-friend-game-btn" class="btn normal-btn">Play with friend</button>
+
+            </div>
+        </div>
+
+    </div>
+    <script src="resources/js/AI.js"></script>
+    <script src="resources/js/Notification.js"></script>
+    <script src="resources/js/app.js"></script>
+</body>
+
+</html>
