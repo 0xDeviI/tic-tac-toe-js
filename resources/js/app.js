@@ -23,7 +23,7 @@ var _gameBoard = [
 
 var _AI = new TTT_AI(debug);
 
-var put = (player, id) => {
+function put(player, id) {
     var _id = id;
     for (var i = 0; i < gameBoard.length; i++) {
         for (var j = 0; j < gameBoard[i].length; j++) {
@@ -39,6 +39,8 @@ var put = (player, id) => {
 }
 
 var turn = ['X', 'O'];
+var human = 'X';
+var AI = 'O';
 var currentTurn = 0;
 
 var x = {
@@ -75,28 +77,28 @@ var o = {
     }
 };
 
-var getCurrentTurn = () => {
+function getCurrentTurn() {
     return turn[currentTurn];
 }
 
-var showModal = () => {
+function showModal() {
     mainContainer.classList.add("blury");
     mainContainer.disabled = true;
     modal.style.display = "block";
 }
 
-var hideModal = () => {
+function hideModal() {
     modal.style.display = "none";
     mainContainer.classList.remove("blury");
     mainContainer.disabled = false;
 }
 
-var startGame = () => {
+function startGame() {
     hideModal();
     headerStatus.innerHTML = `${getCurrentTurn()}'s turn`;
 }
 
-var initializeGame = () => {
+function initializeGame() {
     showModal();
     startAIGameBtn.addEventListener("click", function() {
         playAI = true;
@@ -109,7 +111,7 @@ var initializeGame = () => {
     });
 }
 
-var indexToId = (index) => {
+function indexToId(index) {
     var indexTable = {
         '0,0': '1',
         '0,1': '2',
@@ -124,7 +126,7 @@ var indexToId = (index) => {
     return `cell-${indexTable[index.toString()]}`;
 }
 
-var idToIndex = (cell) => {
+function idToIndex(cell) {
     var id = cell.id.replace('cell-', '');
     var idTable = {
         '1': [0, 0],
@@ -140,18 +142,16 @@ var idToIndex = (cell) => {
     return idTable[id];
 }
 
-var oAction = () => {
+function oAction() {
     // perform some AI stuff
     if (canPlay)
-        setTimeout(() => {
-            if (debug)
-                put('O', _AI.action(gameBoard));
-            currentTurn = 0;
-            statusReview();
-        }, 2000);
+        if (debug)
+            put('O', _AI.action(gameBoard));
+    currentTurn = 0;
+    statusReview();
 }
 
-var allCellsFilled = () => {
+function allCellsFilled() {
     for (var i = 0; i < gameBoard.length; i++) {
         for (var j = 0; j < gameBoard[i].length; j++) {
             if (gameBoard[i][j] == '')
@@ -161,57 +161,85 @@ var allCellsFilled = () => {
     return true;
 }
 
-var highlightCell = (cells) => {
+function highlightCell(cells) {
     cells.forEach(element => {
         element.classList.add('highlighted-cell');
     });
 }
 
-var winCheck = () => {
-    if (gameBoard[0][0] !== "" && gameBoard[0][0] === gameBoard[0][1] && gameBoard[0][0] === gameBoard[0][2]) {
-        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([0, 1])), document.getElementById(indexToId([0, 2]))]);
-        return gameBoard[0][0];
-    } else if (gameBoard[1][0] !== "" && gameBoard[1][0] === gameBoard[1][1] && gameBoard[1][0] === gameBoard[1][2]) {
-        highlightCell([document.getElementById(indexToId([1, 0])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([1, 2]))]);
-        return gameBoard[1][0];
-    } else if (gameBoard[2][0] !== "" && gameBoard[2][0] === gameBoard[2][1] && gameBoard[2][0] === gameBoard[2][2]) {
-        highlightCell([document.getElementById(indexToId([2, 0])), document.getElementById(indexToId([2, 1])), document.getElementById(indexToId([2, 2]))]);
-        return gameBoard[2][0];
-    } else if (gameBoard[0][0] !== "" && gameBoard[0][0] === gameBoard[1][0] && gameBoard[0][0] === gameBoard[2][0]) {
-        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([1, 0])), document.getElementById(indexToId([2, 0]))]);
-        return gameBoard[0][0];
-    } else if (gameBoard[0][1] !== "" && gameBoard[0][1] === gameBoard[1][1] && gameBoard[0][1] === gameBoard[2][1]) {
-        highlightCell([document.getElementById(indexToId([0, 1])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 1]))]);
-        return gameBoard[0][1];
-    } else if (gameBoard[0][2] !== "" && gameBoard[0][2] === gameBoard[1][2] && gameBoard[0][2] === gameBoard[2][2]) {
-        highlightCell([document.getElementById(indexToId([0, 2])), document.getElementById(indexToId([1, 2])), document.getElementById(indexToId([2, 2]))]);
-        return gameBoard[0][2];
-    } else if (gameBoard[0][0] !== "" && gameBoard[0][0] === gameBoard[1][1] && gameBoard[0][0] === gameBoard[2][2]) {
-        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 2]))]);
-        return gameBoard[0][0];
-    } else if (gameBoard[0][2] !== "" && gameBoard[0][2] === gameBoard[1][1] && gameBoard[0][2] === gameBoard[2][0]) {
-        highlightCell([document.getElementById(indexToId([0, 2])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 0]))]);
-        return gameBoard[0][2];
+function equals3(a, b, c) {
+    return a == b && b == c && a != '';
+}
+
+function checkWinner(board) {
+    if (equals3(board[0][0], board[0][1], board[0][2])) {
+        return board[0][0];
+    } else if (equals3(board[1][0], board[1][1], board[1][2])) {
+        return board[1][0];
+    } else if (equals3(board[2][0], board[2][1], board[2][2])) {
+        return board[2][0];
+    } else if (equals3(board[0][0], board[1][0], board[2][0])) {
+        return board[0][0];
+    } else if (equals3(board[0][1], board[1][1], board[2][1])) {
+        return board[0][1];
+    } else if (equals3(board[0][2], board[1][2], board[2][2])) {
+        return board[0][2];
+    } else if (equals3(board[0][0], board[1][1], board[2][2])) {
+        return board[0][0];
+    } else if (equals3(board[0][2], board[1][1], board[2][0])) {
+        return board[0][2];
     } else if (allCellsFilled()) {
-        return 'draw';
+        return 'tie';
     } else {
         return false;
     }
 }
 
-var disableGame = () => {
+function winCheck() {
+    if (equals3(gameBoard[0][0], gameBoard[0][1], gameBoard[0][2])) {
+        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([0, 1])), document.getElementById(indexToId([0, 2]))]);
+        return gameBoard[0][0];
+    } else if (equals3(gameBoard[1][0], gameBoard[1][1], gameBoard[1][2])) {
+        highlightCell([document.getElementById(indexToId([1, 0])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([1, 2]))]);
+        return gameBoard[1][0];
+    } else if (equals3(gameBoard[2][0], gameBoard[2][1], gameBoard[2][2])) {
+        highlightCell([document.getElementById(indexToId([2, 0])), document.getElementById(indexToId([2, 1])), document.getElementById(indexToId([2, 2]))]);
+        return gameBoard[2][0];
+    } else if (equals3(gameBoard[0][0], gameBoard[1][0], gameBoard[2][0])) {
+        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([1, 0])), document.getElementById(indexToId([2, 0]))]);
+        return gameBoard[0][0];
+    } else if (equals3(gameBoard[0][1], gameBoard[1][1], gameBoard[2][1])) {
+        highlightCell([document.getElementById(indexToId([0, 1])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 1]))]);
+        return gameBoard[0][1];
+    } else if (equals3(gameBoard[0][2], gameBoard[1][2], gameBoard[2][2])) {
+        highlightCell([document.getElementById(indexToId([0, 2])), document.getElementById(indexToId([1, 2])), document.getElementById(indexToId([2, 2]))]);
+        return gameBoard[0][2];
+    } else if (equals3(gameBoard[0][0], gameBoard[1][1], gameBoard[2][2])) {
+        highlightCell([document.getElementById(indexToId([0, 0])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 2]))]);
+        return gameBoard[0][0];
+    } else if (equals3(gameBoard[0][2], gameBoard[1][1], gameBoard[2][0])) {
+        highlightCell([document.getElementById(indexToId([0, 2])), document.getElementById(indexToId([1, 1])), document.getElementById(indexToId([2, 0]))]);
+        return gameBoard[0][2];
+    } else if (allCellsFilled()) {
+        return 'tie';
+    } else {
+        return false;
+    }
+}
+
+function disableGame() {
     gameBoardElement.disabled = true;
     canPlay = false;
 }
 
-var enableGame = () => {
+function enableGame() {
     gameBoardElement.disabled = false;
     canPlay = true;
     if (playAI)
         oAction();
 }
 
-var clearBoard = () => {
+function clearBoard() {
     cells.forEach(element => {
         element.classList.remove("x-filled");
         element.classList.remove("o-filled");
@@ -223,11 +251,11 @@ var clearBoard = () => {
         ['', '', ''],
         ['', '', '']
     ];
-    // randomly select who goes first
-    currentTurn = Math.floor(Math.random() * 2) + 1;
+    // random number between 0 and 1
+    currentTurn = Math.floor(Math.random() * 2);
 }
 
-var restartGame = () => {
+function restartGame() {
     setTimeout(() => {
         clearBoard();
         enableGame();
@@ -235,15 +263,15 @@ var restartGame = () => {
     }, 2000);
 }
 
-var boardStatusCheck = () => {
+function boardStatusCheck() {
     headerStatus.innerHTML = `${getCurrentTurn()}'s turn`;
 }
 
-var statusReview = () => {
+function statusReview() {
     var winner = winCheck();
     if (winner !== false) {
-        if (winner === 'draw') {
-            headerStatus.innerHTML = `It's a draw!`;
+        if (winner === 'tie') {
+            headerStatus.innerHTML = `It's a tie!`;
         } else {
             if (winner === 'X') {
                 x.winner();
