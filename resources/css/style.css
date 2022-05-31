@@ -6,6 +6,7 @@
     --cell-border-color: rgb(218, 218, 218);
     --cell-background-color: #201e1e;
     --secondary-color: #31563f;
+    --custom-url-color: #f30000;
 }
 
 body {
@@ -207,4 +208,18 @@ body {
 .highlighted-cell {
     background-color: var(--primary-color);
     color: var(--text-color);
+}
+
+p.developer-info {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.develoer-link {
+    color: var(--custom-url-color);
+    font-size: 12px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
 }
